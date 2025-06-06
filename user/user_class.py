@@ -18,7 +18,7 @@ class User:
         self.__creation_time = time_now()
 
 
-        self.protected_attr = ["__user_id", "__creation_time"]q
+        self.protected_attr = ["__user_id", "__creation_time"]
 
 #──────────────────────────────────────────||──||
     def getter(self, attr_name):
