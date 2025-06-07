@@ -1,5 +1,5 @@
 from user import time_now
-import ERRORS
+from main_files.ERRORS import ExistenceError, AccessDeniedError
 
 
 #──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
@@ -7,47 +7,100 @@ import ERRORS
 #──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
 
 class User:
-    def __init__(self, user_id: str, password: str, name: str, email: str, account=None):
-        self._name = name
-        self._email = email
-        self._password = password
-        self.accounts = []
+    def __init__(self, user_id: str, password: str, name: str, email: str):
+        self._name = name.upper()
+        self._email = email.upper()
+        self._password = password.upper()
+        self._accounts = {
+            "SAVING": [],
+            "CHECKING" : []
+        }
 
 
-        self.__user_id = user_id
+        self.__user_id = user_id.upper()
         self.__creation_time = time_now()
 
 
-        self.protected_attr = ["__user_id", "__creation_time"]
+#──────────────────────────────────────────||──||
+#──────────────────────────────────────────||──||
+    @property
+    def user_id(self):
+        return self.__user_id
+
+    @property
+    def creation_time(self):
+        return self.__creation_time
 
 #──────────────────────────────────────────||──||
-    def getter(self, attr_name):
-        if attr_name in self.protected_attr:
-            attr =  "_User" + attr_name
-            return getattr(self, attr, None)
-        return getattr(self, attr_name, None)
+    @property
+    def name(self):
+        return self._name
 
+    @name.setter
+    def name(self, value):
+        self._name = value
 #──────────────────────────────────────────||──||
-    def setter(self, attr_name, value):
-        if attr_name in self.protected_attr:
-            raise ERRORS.AccessDeniedError()
+    @property
+    def email(self):
+        return self._email
 
-        setattr(self, attr_name, value)
-        print("Success")
-        return True
+    @email.setter
+    def email(self, value):
+        self._email = value
+#──────────────────────────────────────────||──||
+    @property
+    def password(self):
+        return self._password
 
+    @password.setter
+    def password(self, value):
+        self._password = value
+#──────────────────────────────────────────||──||
+    @property
+    def accounts(self):
+        return self._accounts
+
+    @accounts.setter
+    def accounts(self, value: tuple[str, int]):
+        match value[0]:
+            case "SAVING":
+                if any(value[1] in val for val in self._accounts.values()):
+                    raise ExistenceError
+                else:
+                    self._accounts["SAVING"].append(value[1])
+                    print(self._accounts.items())
+
+            case "CHECKING":
+                if any(value[1] in val for val in self._accounts.values()):
+                    raise ExistenceError
+                else:
+                    self._accounts["CHECKING"].append(value[1])
+#──────────────────────────────────────────||──||
 #──────────────────────────────────────────||──||
 
 #──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
 ########################################################################################################################
 #──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
 
-a = User("AB122222", "bb123", "EDWARD","EDWARD@GMAIL.COM")
+class BusinessClient(User):
+    def __init__(self, user_id, password, name, email, corporate_name, corporate_account = None):
+        super().__init__(user_id, password, name, email)
 
-print(a.getter("__user_id"))
-print(a.getter("_email"))
+#──────────────────────────────────────────||──||
+#──────────────────────────────────────────||──||
 
-a.setter("_email", "ded@gmail.com")
-# a.setter("__user_id", "new")
-# print(a.getter("__user_id"))
-print(a.getter("_email"))
+        self._corporate_name = corporate_name
+        self.corporate_account = corporate_account
+
+#──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+########################################################################################################################
+#──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
+
+a = User("ID0003", "qwerty", "edward", "edward@gmail.com")
+
+print(a.name)
+print(a.creation_time)
+
+a.accounts = ("SAVING", 1234_5678)
+a.accounts = ("SAVING", 1234_5678)
+print(a.accounts)
