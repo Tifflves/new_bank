@@ -1,5 +1,5 @@
-from user import time_now
-from main_files.ERRORS import ExistenceError, AccessDeniedError
+from objects.user import time_now
+from main_files.ERRORS import ExistenceError
 
 
 #──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────#
